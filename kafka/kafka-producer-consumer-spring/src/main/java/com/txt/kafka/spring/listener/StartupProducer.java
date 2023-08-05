@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Component
-public class StartupListener implements ApplicationRunner {
+public class StartupProducer implements ApplicationRunner {
 
     @Value(value = "${topic.name}")
     private String topicName;
@@ -21,11 +21,6 @@ public class StartupListener implements ApplicationRunner {
 
     public void sendMessage(String msg) {
         kafkaTemplate.send(topicName, msg);
-    }
-
-    @KafkaListener(topics = "${topic.name}", groupId = "group-spring-test")
-    public void listen(String message) {
-        System.out.println("Received Message in group - group-id: " + message);
     }
 
     @Override
