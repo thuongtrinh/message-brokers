@@ -1,4 +1,4 @@
-package com.txt.javakafkaproducer;
+package com.txt.kafka.java;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -21,21 +21,16 @@ public class SimpleConsumer {
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "30000");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+//        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");  //read message of topic from offset begin
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");  //read message of topic at current (default)
 
-//        đoc các message của topic từ thoi điểm hiển tại (default)
-//        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
-
-//        đoc tất cả các message của topic từ offset ban đầu
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
-
-        consumer.subscribe(Arrays.asList("test"));
-//        while (true) {
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+        consumer.subscribe(Arrays.asList(Constants.TOPIC_TEST));
+        while (true) {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000L));
             for (ConsumerRecord<String, String> record : records) {
                 System.out.printf("offset = %d, key = %s, value = %s%n", record.offset(), record.key(), record.value());
             }
-//        }
+        }
     }
 }
