@@ -1,4 +1,4 @@
-package com.txt.springbootkafka.config;
+package com.txt.kafka.spring.config;
 
 import java.util.HashMap;
 import java.util.Map;
