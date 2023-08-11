@@ -1,0 +1,23 @@
+spring:
+    kafka:
+        bootstrap-servers: localhost:9092
+
+message:
+    topic:
+        name: MESSAGE_01
+
+partitioned:
+    topic:
+        name: MES_partitioned
+
+filtered:
+    topic:
+        name: MES_filtered
+
+greeting:
+    topic:
+        name: MES_greeting
+
+multitype:
+    topic:
+        name: MES_multitype
