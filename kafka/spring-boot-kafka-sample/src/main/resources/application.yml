@@ -1,6 +1,9 @@
 spring:
     kafka:
         bootstrap-servers: localhost:9092
+        streams:
+            state:
+                dir: D:\\DB\\data\\kafka\\streams_state_dir
 
 message:
     topic:
@@ -21,3 +24,9 @@ greeting:
 multitype:
     topic:
         name: MES_multitype
+---
+
+kafkastream:
+    topic:
+        in: MES_STREAM_input
+        out: MES_STREAM_output
