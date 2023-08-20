@@ -1,32 +1,30 @@
 spring:
+#    main:
+#        allow-bean-definition-overriding: true
     kafka:
         bootstrap-servers: localhost:9092
         streams:
             state:
                 dir: D:\\DB\\data\\kafka\\streams_state_dir
-
+---
 message:
     topic:
         name: MESSAGE_01
-
 partitioned:
     topic:
         name: MES_partitioned
-
 filtered:
     topic:
         name: MES_filtered
-
 greeting:
     topic:
         name: MES_greeting
-
 multitype:
     topic:
         name: MES_multitype
 ---
-
 kafkastream:
     topic:
         in: MES_STREAM_input
         out: MES_STREAM_output
+---
