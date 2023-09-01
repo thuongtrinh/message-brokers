@@ -1,11 +1,8 @@
 package com.txt.kafka.demo.common;
 
 public class Sample {
+
     private String oneString;
-
-    public Sample() {
-
-    }
 
     public Sample(String oneString) {
         this.oneString = oneString;

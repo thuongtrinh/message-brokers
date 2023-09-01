@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.txt</groupId>
-    <artifactId>spring-boot-kafka-third</artifactId>
+    <artifactId>spring-boot-kafka-connect</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>spring-boot-kafka-third</name>
+    <name>spring-boot-kafka-connect</name>
     <description>Demo project for Spring Boot</description>
     <properties>
         <java.version>1.8</java.version>
