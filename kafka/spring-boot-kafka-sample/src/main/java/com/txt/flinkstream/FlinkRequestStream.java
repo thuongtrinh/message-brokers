@@ -35,8 +35,8 @@ public class FlinkRequestStream {
         kafkaProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, addressKafka);
         kafkaProps.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
 
-        FlinkKafkaConsumer<String> bizObjFlinkKafkaConsumer = new FlinkKafkaConsumer<>(inputTopic, new SimpleStringSchema(), kafkaProps);
-        bizObjFlinkKafkaConsumer.setStartFromEarliest();
+        FlinkKafkaConsumer<String> kafkaConsumer = new FlinkKafkaConsumer<>(inputTopic, new SimpleStringSchema(), kafkaProps);
+        kafkaConsumer.setStartFromEarliest();
         logger.info("Obj log topic: {}", inputTopic);
 
         // jackson
@@ -44,14 +44,14 @@ public class FlinkRequestStream {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         // get data from topic in
-        DataStream<String> bizObjStream = env.addSource(bizObjFlinkKafkaConsumer).name("Data from Kafka " + inputTopic + " - " + addressKafka);
+        DataStream<String> bizObjStream = env.addSource(kafkaConsumer).name("Data from Kafka " + inputTopic + " - " + addressKafka);
         bizObjStream.rebalance();
 
-        DataStream<TransactionDTO> bizObjResultStream = bizObjStream.map(new MapFunction<>() {
-            private static final long serialVersionUID = -2335483819304911134L;
+        DataStream<TransactionDTO> dataStream = bizObjStream.map(new MapFunction<>() {
+            private static final long serialVersionUID = 1L;
 
             @Override
-            public TransactionDTO map(String str) throws Exception {
+            public TransactionDTO map(String str) {
                 TransactionDTO transactionDTO = convertTransactionOpsChangeDespathAddress();
                 logger.info("TransactionDTO was transformed: {}", transactionDTO);
                 return transactionDTO;
@@ -62,7 +62,7 @@ public class FlinkRequestStream {
         final int kafkaTransactionTimeout = 300000;
         kafkaProps.put("transaction.timeout.ms", kafkaTransactionTimeout);
         logger.info("Oj out topic: {}, Kafka transaction timeout: {}", outputTopic, kafkaTransactionTimeout);
-        FlinkKafkaProducer<TransactionDTO> kafkaProducer = new FlinkKafkaProducer<TransactionDTO>(outputTopic, new KafkaSerializationSchema<TransactionDTO>() {
+        FlinkKafkaProducer<TransactionDTO> kafkaProducer = new FlinkKafkaProducer<>(outputTopic, new KafkaSerializationSchema<TransactionDTO>() {
             @SneakyThrows
             @Override
             public ProducerRecord<byte[], byte[]> serialize(TransactionDTO transactionOps, Long aLong) {
@@ -75,7 +75,7 @@ public class FlinkRequestStream {
         // this method is not available for earlier Kafka versions
         kafkaProducer.setWriteTimestampToKafka(true);
 
-        bizObjResultStream.addSink(kafkaProducer).name("Data to Kafka " + outputTopic + " - " + addressKafka);
+        dataStream.addSink(kafkaProducer).name("Data to Kafka " + outputTopic + " - " + addressKafka);
 
         env.execute("Data Request Stream");
     }
