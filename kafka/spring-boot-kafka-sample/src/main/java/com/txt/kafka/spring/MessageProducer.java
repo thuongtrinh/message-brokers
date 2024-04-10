@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
+import java.util.concurrent.CompletableFuture;
+
 @Component
 public class MessageProducer {
 
@@ -32,16 +34,16 @@ public class MessageProducer {
 
 
     public void sendMessage(String message) {
-        /*CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(topicName, message);
+        CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(topicName, message);
         future.whenComplete((result, ex) -> {
             if (ex == null) {
                 System.out.println("Sent message=[" + message + "] with offset=[" + result.getRecordMetadata().offset() + "]");
             } else {
                 System.out.println("Unable to send message=[" + message + "] due to : " + ex.getMessage());
             }
-        });*/
+        });
 
-        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topicName, message);
+       /*ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topicName, message);
         future.addCallback(new ListenableFutureCallback<>() {
             @Override
             public void onSuccess(SendResult<String, String> result) {
@@ -51,7 +53,7 @@ public class MessageProducer {
             public void onFailure(Throwable ex) {
                 System.out.println("Unable to send message=[" + message + "] due to : " + ex.getMessage());
             }
-        });
+        });*/
 
         System.out.println("End sendMessage...");
     }

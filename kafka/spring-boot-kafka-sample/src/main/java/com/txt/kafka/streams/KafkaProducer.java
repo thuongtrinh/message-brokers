@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
@@ -24,8 +25,8 @@ public class KafkaProducer {
     private static volatile int dem = 0;
 
     public void sendMessage(String message) {
-        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topicIn, "keysp" + dem++, message);
-        future.addCallback(new ListenableFutureCallback<>() {
+        /*ListenableFuture<SendResult<String, String>> futured = kafkaTemplate.send(topicIn, "keysp" + dem++, message);
+        futured.addCallback(new ListenableFutureCallback<>() {
 
             @Override
             public void onSuccess(SendResult<String, String> result) {
@@ -35,6 +36,19 @@ public class KafkaProducer {
             @Override
             public void onFailure(Throwable ex) {
                 log.error("Failed to send message", ex);
+            }
+        });*/
+
+        CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(topicIn, "keysp" + dem++, message);
+        future.handle((result, ex) -> {
+            if (result != null) {
+                log.info("Message sent to topic: {}", message);
+                return result;
+            } else if (ex != null) {
+                log.error("Failed to send message", ex.getMessage());
+                throw new RuntimeException(ex);
+            } else {
+                throw new RuntimeException("weird");
             }
         });
     }

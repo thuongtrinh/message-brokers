@@ -36,7 +36,7 @@ public class MessageListener {
     }
 
     @KafkaListener(topics = "${message.topic.name}", containerFactory = "headersKafkaListenerContainerFactory")
-    public void listenWithHeaders(@Payload String message, @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition) {
+    public void listenWithHeaders(@Payload String message, @Header(KafkaHeaders.RECEIVED_PARTITION) int partition) {
         System.out.println("Received Message: " + message + " from partition: " + partition);
         latch.countDown();
         System.out.println("headers=" +latch.getCount());
@@ -44,7 +44,7 @@ public class MessageListener {
 
     @KafkaListener(topicPartitions = @TopicPartition(topic = "${partitioned.topic.name}", partitions = { "0", "3" }),
             containerFactory = "partitionsKafkaListenerContainerFactory")
-    public void listenToPartition(@Payload String message, @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition) {
+    public void listenToPartition(@Payload String message, @Header(KafkaHeaders.RECEIVED_PARTITION) int partition) {
         System.out.println("Received Message: " + message + " from partition: " + partition);
         this.partitionLatch.countDown();
         System.out.println("partitionLatch count=" +partitionLatch.getCount());
