@@ -28,3 +28,6 @@ kafkastream:
         in: MES_STREAM_input
         out: MES_STREAM_output
 ---
+# flink
+#group.id: connect-cluster
+#bootstrap.servers: localhost:9092
