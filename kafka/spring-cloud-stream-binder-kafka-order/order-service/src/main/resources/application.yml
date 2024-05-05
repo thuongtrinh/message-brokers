@@ -1,0 +1,17 @@
+spring.application.name: order-service-binder
+
+spring:
+  output.ansi.enabled: ALWAYS
+  kafka:
+    bootstrap-servers: localhost:9092
+  cloud:
+    stream:
+      function.definition: orderBuySupplier;orderSellSupplier
+      bindings:
+        orderBuySupplier-out-0.destination: orders.buy
+        orderBuySupplier-out-0.producer.configuration.key.serializer: org.apache.kafka.common.serialization.LongSerializer
+        orderSellSupplier-out-0.destination: orders.sell
+        orderSellSupplier-out-0.producer.configuration.key.serializer: org.apache.kafka.common.serialization.LongSerializer
+
+
+logging.pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%15.15t]){yellow} %clr(:){red} %clr(%m){faint}%n"

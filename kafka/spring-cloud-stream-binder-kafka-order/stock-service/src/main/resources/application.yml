@@ -1,0 +1,37 @@
+application:
+  description: Stock Service API
+  version: 1.0
+
+spring:
+  application.name: stock-service
+  output.ansi.enabled: ALWAYS
+  kafka:
+    bootstrap-servers: localhost:9092
+  cloud:
+    stream:
+      function.definition: orders;transactions;total;totalPerProduct;latestPerProduct
+      kafka:
+        streams:
+          binder:
+            functions:
+              orders.applicationId: orders
+              transactions.applicationId: transactions
+              total.applicationId: total
+              totalPerProduct.applicationId: totalPerProduct
+              latestPerProduct.applicationId: latestPerProduct
+      bindings:
+        total-in-0.destination: transactions
+        orders-in-0.destination: orders.buy
+        orders-in-1.destination: orders.sell
+        transactions-in-0.destination: orders.buy
+        transactions-in-1.destination: orders.sell
+        transactions-out-0.destination: transactions
+        totalPerProduct-in-0.destination: transactions
+        totalPerProduct-in-1.destination: orders.sell
+        latestPerProduct-in-0.destination: transactions
+        latestPerProduct-in-1.destination: orders.sell
+
+
+logging.pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%15.15t]){yellow} %clr(:){red} %clr(%m){faint}%n"
+
+management.endpoints.web.exposure.include: "*"
