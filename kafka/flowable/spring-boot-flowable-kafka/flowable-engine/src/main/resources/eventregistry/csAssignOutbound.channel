@@ -1,0 +1,9 @@
+{
+  "key": "assignChannel",
+  "category": "channel",
+  "name": "Sent Event To Assignment Service Channel",
+  "channelType": "outbound",
+  "type": "kafka",
+  "topic": "${cs-tenant-id}-ASSIGNMENT-IN",
+  "serializerType": "json"
+}

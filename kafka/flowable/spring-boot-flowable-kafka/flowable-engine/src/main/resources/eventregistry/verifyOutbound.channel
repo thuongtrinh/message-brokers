@@ -1,0 +1,9 @@
+{
+  "key": "verifyRequestChannel",
+  "category": "channel",
+  "name": "Sent Event To Verify topic",
+  "channelType": "outbound",
+  "type": "kafka",
+  "topic": "${syspro-tenant-id}-VERIFY",
+  "serializerType": "json"
+}

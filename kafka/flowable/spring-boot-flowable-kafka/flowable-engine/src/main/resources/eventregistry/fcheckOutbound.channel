@@ -1,0 +1,9 @@
+{
+  "key": "fcheckChannel",
+  "category": "channel",
+  "name": "Sent Event To Check Service Channel",
+  "channelType": "outbound",
+  "type": "kafka",
+  "topic": "${syspro-tenant-id}-FCHECK-IN",
+  "serializerType": "json"
+}

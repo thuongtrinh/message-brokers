@@ -1,0 +1,5 @@
+management.endpoint.flowable.enabled: true
+server:
+  port: 8180
+  servlet:
+    context-path: /

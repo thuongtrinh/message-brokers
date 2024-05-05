@@ -1,0 +1,12 @@
+{
+  "key": "fcheckResultChannel",
+  "category": "channel",
+  "name": "Listening Result From Check Service Channel",
+  "channelType": "inbound",
+  "type": "kafka",
+  "topics": ["${syspro-tenant-id}-FCHECK-OUT"],
+  "deserializerType": "json",
+  "channelEventKeyDetection": {
+      "jsonField": "eventKey"
+  }
+}

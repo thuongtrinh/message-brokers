@@ -1,0 +1,44 @@
+spring:
+  application.name: Flowable Do Core Service
+  liquibase.enabled: false
+#  profiles:
+#    active: dev
+  kafka:
+    producer:
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      bootstrap-servers:
+        - localhost:9092
+    consumer:
+      group-id: dmflowable
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+      bootstrap-servers:
+        - localhost:9092
+      properties:
+        max.poll.interval.ms: 1800000
+    listener:
+        missing-topics-fatal: false
+  couchbase:
+    connectionString: localhost
+    bucketName: submission
+    username: couchbase
+    password: couchbase
+    autoIndex: true
+  data.couchbase.auto-index: true
+
+syspro-version: 1.0.0
+syspro-tenant-id: sys-${syspro-version}
+syspro-deployment-mode: default-tenantid
+
+docore:
+  topic:
+    in: ${syspro-tenant-id}-DOCORE-IN
+    out: ${syspro-tenant-id}-DOCORE-OUT
+    outKey: doCoreResultEvent
+
+aq:
+  topic:
+    in: ${syspro-tenant-id}-AQ-ASSIGN-IN
+    out: ${syspro-tenant-id}-AQ-ASSIGN-OUT

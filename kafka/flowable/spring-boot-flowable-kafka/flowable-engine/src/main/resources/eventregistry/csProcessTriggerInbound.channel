@@ -1,0 +1,12 @@
+{
+  "key": "processCSTriggerChannel",
+  "category": "channel",
+  "name": "Process CS Trigger Channel",
+  "channelType": "inbound",
+  "type": "kafka",
+  "topics": ["${cs-tenant-id}-CS-TRIGGER-TOPIC"],
+  "deserializerType": "json",
+  "channelEventKeyDetection": {
+      "jsonField": "eventKey"
+  }
+}

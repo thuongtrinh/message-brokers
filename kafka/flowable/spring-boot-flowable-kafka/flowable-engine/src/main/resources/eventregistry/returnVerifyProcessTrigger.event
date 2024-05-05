@@ -1,0 +1,22 @@
+{
+  "key": "returnVerifyProcessTriggerEvent",
+  "name": "Send an return Verify process Event",
+  "inboundChannelKeys": [
+      "returnVerifyProcessTriggerChannel"
+   ],
+  "correlationParameters": [],
+  "payload": [
+        {
+            "name": "processInstanceId",
+            "type": "string"
+        },
+        {
+            "name": "eventKey",
+            "type": "string"
+        },
+        {
+            "name": "verifyResult",
+            "type": "string"
+        }
+  ]
+}

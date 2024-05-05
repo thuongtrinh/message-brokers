@@ -1,0 +1,21 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <description>Spring Boot Flowable Example</description>
+
+    <groupId>com.txt.wssoap</groupId>
+    <artifactId>spring-boot-flowable-example</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>sp-flowable-engine</module>
+        <module>sp-flowable-rest</module>
+        <module>sp-flowable-assignment-service</module>
+        <module>sp-flowable-check-service</module>
+        <module>sp-flowable-common</module>
+        <module>sp-flowable-docore-service</module>
+        <module>sp-flowable-verify-service</module>
+    </modules>
+
+</project>

@@ -1,0 +1,22 @@
+{
+  "key": "doCoreEvent",
+  "name": "Send a Do Core Event",
+  "outboundChannelKeys": [
+    "doCoreChannel"
+  ],
+  "correlationParameters": [],
+  "payload": [
+    {
+      "name": "processInstanceId",
+      "type": "string"
+    },
+    {
+      "name": "transType",
+      "type": "string"
+    },
+    {
+      "name": "resource",
+      "type": "string"
+    }
+  ]
+}

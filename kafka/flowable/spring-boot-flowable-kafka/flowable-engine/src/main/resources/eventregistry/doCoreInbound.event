@@ -1,0 +1,33 @@
+{
+  "key": "doCoreResultEvent",
+  "name": "First DoCore Result Event",
+  "inboundChannelKeys": [
+    "doCoreResultChannel"
+  ],
+  "payload": [
+    {
+      "name": "processInstanceId",
+      "type": "string"
+    },
+    {
+      "name": "eventKey",
+      "type": "string"
+    },
+    {
+      "name": "doCoreResult",
+      "type": "boolean"
+    },
+    {
+      "name": "aq_assignee",
+      "type": "string"
+    },
+    {
+      "name": "candidate_group_aq",
+      "type": "string"
+    },
+    {
+      "name": "is_skip_aq",
+      "type": "boolean"
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://flowable.org/test" exporter="Flowable Open Source Modeler" exporterVersion="6.7.2">
+  <collaboration id="Collaboration">
+    <participant id="cs-flowable-process-collab" name="CS Flowable Process" processRef="cs-flowable-process"></participant>
+  </collaboration>
+  <process id="cs-flowable-process" name="CS Flowable Process" isExecutable="true">
+    <laneSet id="laneSet_cs-flowable-process">
+      <lane id="cs-system-stage" name="Systems">
+        <flowNodeRef>workflowStage_start-cs-event</flowNodeRef>
+        <flowNodeRef>in-progress-cs-event</flowNodeRef>
+        <flowNodeRef>initialProcessDataCS</flowNodeRef>
+        <flowNodeRef>workflowStage_event-assign</flowNodeRef>
+        <flowNodeRef>system-cs-end-event</flowNodeRef>
+        <flowNodeRef>gw-start-process-cs-to-in-progress-event</flowNodeRef>
+        <flowNodeRef>gw-to-init-data-cs</flowNodeRef>
+        <flowNodeRef>gw-to-complete-cs</flowNodeRef>
+        <flowNodeRef>gw-to-assign</flowNodeRef>
+      </lane>
+      <lane id="manual-stage" name="Manual"></lane>
+    </laneSet>
+    <startEvent id="workflowStage_start-cs-event" name="1.Trigger CS (Start Process)">
+      <extensionElements>
+        <flowable:eventType xmlns:flowable="http://flowable.org/bpmn"><![CDATA[triggerCSEvent]]></flowable:eventType>
+        <flowable:eventName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Trigger A Process CS Event]]></flowable:eventName>
+        <flowable:eventOutParameter xmlns:flowable="http://flowable.org/bpmn" source="transType" sourceType="string" target="transType"></flowable:eventOutParameter>
+        <flowable:eventOutParameter xmlns:flowable="http://flowable.org/bpmn" source="payload" sourceType="string" target="payload"></flowable:eventOutParameter>
+        <flowable:eventOutParameter xmlns:flowable="http://flowable.org/bpmn" source="correlationId" sourceType="string" target="correlationId"></flowable:eventOutParameter>
+        <flowable:eventOutParameter xmlns:flowable="http://flowable.org/bpmn" source="exchangeId" sourceType="string" target="exchangeId"></flowable:eventOutParameter>
+        <flowable:eventOutParameter xmlns:flowable="http://flowable.org/bpmn" source="resource" sourceType="string" target="resource"></flowable:eventOutParameter>
+        <flowable:eventOutParameter xmlns:flowable="http://flowable.org/bpmn" source="createdDate" sourceType="string" target="createdDate"></flowable:eventOutParameter>
+        <flowable:eventOutParameter xmlns:flowable="http://flowable.org/bpmn" source="createdBy" sourceType="string" target="createdBy"></flowable:eventOutParameter>
+        <flowable:eventOutParameter xmlns:flowable="http://flowable.org/bpmn" source="fix" sourceType="string" target="fix"></flowable:eventOutParameter>
+        <flowable:eventOutParameter xmlns:flowable="http://flowable.org/bpmn" source="category" sourceType="string" target="category"></flowable:eventOutParameter>
+        <flowable:channelKey xmlns:flowable="http://flowable.org/bpmn"><![CDATA[processCSTriggerChannel]]></flowable:channelKey>
+        <flowable:channelName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Process Trigger Channel]]></flowable:channelName>
+        <flowable:channelType xmlns:flowable="http://flowable.org/bpmn"><![CDATA[kafka]]></flowable:channelType>
+        <flowable:keyDetectionType xmlns:flowable="http://flowable.org/bpmn"><![CDATA[fixedValue]]></flowable:keyDetectionType>
+        <flowable:keyDetectionValue xmlns:flowable="http://flowable.org/bpmn"><![CDATA[eventKey]]></flowable:keyDetectionValue>
+      </extensionElements>
+    </startEvent>
+    <intermediateThrowEvent id="in-progress-cs-event" name="In Progress" flowable:async="true">
+      <extensionElements>
+        <flowable:executionListener event="start" expression="#{trackSystemActivityLogService.trackInProgressEvent(execution)}"></flowable:executionListener>
+      </extensionElements>
+    </intermediateThrowEvent>
+    <serviceTask id="initialProcessDataCS" name="2. Initial Process Data CS" flowable:expression="#{initialProcessDataCSService.execute(execution)}"></serviceTask>
+    <serviceTask id="workflowStage_event-assign" name="3. Assignment" flowable:async="true" flowable:type="send-event" flowable:triggerable="true">
+      <extensionElements>
+        <flowable:eventType><![CDATA[assignEvent]]></flowable:eventType>
+        <flowable:triggerEventType><![CDATA[assignResultEvent]]></flowable:triggerEventType>
+        <flowable:eventInParameter sourceExpression="${execution.getProcessInstanceId()}" target="processInstanceId" targetType="string"></flowable:eventInParameter>
+        <flowable:eventInParameter sourceExpression="${transType}" target="transType" targetType="string"></flowable:eventInParameter>
+        <flowable:eventInParameter sourceExpression="${resource}" target="resource" targetType="string"></flowable:eventInParameter>
+        <flowable:eventName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Send a AssignEvent]]></flowable:eventName>
+        <flowable:channelKey xmlns:flowable="http://flowable.org/bpmn"><![CDATA[assignChannel]]></flowable:channelKey>
+        <flowable:channelName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Sent Event To Assign Service Channel]]></flowable:channelName>
+        <flowable:channelType xmlns:flowable="http://flowable.org/bpmn"><![CDATA[kafka]]></flowable:channelType>
+        <flowable:triggerEventName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Assign Result Event]]></flowable:triggerEventName>
+        <flowable:triggerChannelKey xmlns:flowable="http://flowable.org/bpmn"><![CDATA[assignResultChannel]]></flowable:triggerChannelKey>
+        <flowable:triggerChannelName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Listening Result From Assign Service Channel]]></flowable:triggerChannelName>
+        <flowable:triggerChannelType xmlns:flowable="http://flowable.org/bpmn"><![CDATA[kafka]]></flowable:triggerChannelType>
+        <flowable:keyDetectionType xmlns:flowable="http://flowable.org/bpmn"><![CDATA[fixedValue]]></flowable:keyDetectionType>
+        <flowable:keyDetectionValue xmlns:flowable="http://flowable.org/bpmn"><![CDATA[eventKey]]></flowable:keyDetectionValue>
+      </extensionElements>
+    </serviceTask>
+    <endEvent id="system-cs-end-event"></endEvent>
+    <sequenceFlow id="gw-start-process-cs-to-in-progress-event" sourceRef="workflowStage_start-cs-event" targetRef="in-progress-cs-event"></sequenceFlow>
+    <sequenceFlow id="gw-to-init-data-cs" sourceRef="in-progress-cs-event" targetRef="initialProcessDataCS"></sequenceFlow>
+    <sequenceFlow id="gw-to-complete-cs" sourceRef="workflowStage_event-assign" targetRef="system-cs-end-event"></sequenceFlow>
+    <sequenceFlow id="gw-to-assign" sourceRef="initialProcessDataCS" targetRef="workflowStage_event-assign"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Collaboration">
+    <bpmndi:BPMNPlane bpmnElement="Collaboration" id="BPMNPlane_Collaboration">
+      <bpmndi:BPMNShape bpmnElement="cs-flowable-process-collab" id="BPMNShape_cs-flowable-process-collab">
+        <omgdc:Bounds height="473.9999999999998" width="1123.9922135439697" x="45.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="cs-system-stage" id="BPMNShape_cs-system-stage">
+        <omgdc:Bounds height="392.87532533027064" width="1093.9922135439697" x="75.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="workflowStage_start-cs-event" id="BPMNShape_workflowStage_start-cs-event">
+        <omgdc:Bounds height="30.0" width="30.5" x="225.0" y="161.00970362557496"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="in-progress-cs-event" id="BPMNShape_in-progress-cs-event">
+        <omgdc:Bounds height="30.0" width="30.0" x="360.0" y="161.00000000000006"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="initialProcessDataCS" id="BPMNShape_initialProcessDataCS">
+        <omgdc:Bounds height="81.0" width="114.0" x="477.0" y="135.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="workflowStage_event-assign" id="BPMNShape_workflowStage_event-assign">
+        <omgdc:Bounds height="76.0" width="109.0" x="690.0" y="138.00970362557496"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="system-cs-end-event" id="BPMNShape_system-cs-end-event">
+        <omgdc:Bounds height="28.0" width="28.0" x="915.0" y="162.00970362557496"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="manual-stage" id="BPMNShape_manual-stage">
+        <omgdc:Bounds height="81.12467466972913" width="1093.9922135439697" x="75.0" y="422.87532533027064"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="gw-to-complete-cs" id="BPMNEdge_gw-to-complete-cs" flowable:sourceDockerX="54.5" flowable:sourceDockerY="37.99999999999999" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="798.9499999999946" y="176.00970362557496"></omgdi:waypoint>
+        <omgdi:waypoint x="915.0" y="176.00970362557496"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gw-to-assign" id="BPMNEdge_gw-to-assign" flowable:sourceDockerX="57.0" flowable:sourceDockerY="40.5" flowable:targetDockerX="54.5" flowable:targetDockerY="37.99999999999999">
+        <omgdi:waypoint x="590.9499999999923" y="175.63789843931826"></omgdi:waypoint>
+        <omgdi:waypoint x="689.9999999999981" y="175.8777376037515"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gw-to-init-data-cs" id="BPMNEdge_gw-to-init-data-cs" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="57.0" flowable:targetDockerY="40.5">
+        <omgdi:waypoint x="389.94992761084217" y="175.9528304170791"></omgdi:waypoint>
+        <omgdi:waypoint x="476.9999999999961" y="175.6790880503145"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gw-start-process-cs-to-in-progress-event" id="BPMNEdge_gw-start-process-cs-to-in-progress-event" flowable:sourceDockerX="15.25" flowable:sourceDockerY="15.0" flowable:targetDockerX="15.0" flowable:targetDockerY="15.0">
+        <omgdi:waypoint x="255.4499993129053" y="176.00860544160923"></omgdi:waypoint>
+        <omgdi:waypoint x="359.9999984116531" y="176.00107661584622"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

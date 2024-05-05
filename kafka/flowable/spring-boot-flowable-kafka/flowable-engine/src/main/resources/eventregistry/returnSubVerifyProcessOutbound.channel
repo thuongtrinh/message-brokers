@@ -1,0 +1,9 @@
+{
+  "key": "returnSubVerifyProcessResultChannel",
+  "category": "channel",
+  "name": "Sent Event To Return Verify Process Topic",
+  "channelType": "outbound",
+  "type": "kafka",
+  "topic": "${syspro-tenant-id}-RETURN-VERIFY-PROCESS",
+  "serializerType": "json"
+}

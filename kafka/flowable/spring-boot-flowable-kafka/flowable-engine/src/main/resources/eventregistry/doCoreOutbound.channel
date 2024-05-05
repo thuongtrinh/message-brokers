@@ -1,0 +1,9 @@
+{
+  "key": "doCoreChannel",
+  "category": "channel",
+  "name": "Sent Event To DoCore Service Channel",
+  "channelType": "outbound",
+  "type": "kafka",
+  "topic": "${syspro-tenant-id}-DOCORE-IN",
+  "serializerType": "json"
+}

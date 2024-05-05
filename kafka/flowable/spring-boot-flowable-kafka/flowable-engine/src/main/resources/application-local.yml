@@ -1,0 +1,97 @@
+spring:
+  application.name: DM Flowable Engine
+  liquibase:
+    enabled: false
+    changeLog: classpath:db/changelog/db.changelog-master.xml
+  kafka:
+    producer:
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      bootstrap-servers:
+        - localhost:9092
+    consumer:
+      group-id: dmflowable
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+      bootstrap-servers:
+        - localhost:9092
+    listener:
+      missing-topics-fatal: false
+    bootstrap-servers:
+      - localhost:9092
+  datasource:
+    url: jdbc:postgresql://localhost:5433/flowable
+    username: flowable
+    password: flowable
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-test-query: SELECT 1
+      minimum-idle: 5
+      maximum-pool-size: 50
+      pool-name: flowableDBPool1
+      auto-commit: false
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+  couchbase:
+    connectionString: localhost
+    bucketName: submission
+    username: couchbase
+    password: couchbase
+    autoIndex: true
+
+---
+syspro-version: 1.0.0
+syspro-tenant-id: sys-${syspro-version}
+cs-tenant-id: sys-${syspro-version}
+#  cs-${syspro-version}
+syspro-deployment-mode: default-tenantid
+cs-deployment-mode: default-tenantid
+---
+flowable:
+#  platform:
+#    multi-tenant:
+#      enabled: true
+#      auto-deploy-tenants: ${syspro-tenant-id},${cs-tenant-id}
+  database-schema-update: ignore
+  cmmn:
+    event-registry-start-case-instance-async: true
+    async:
+      executor:
+        default-async-job-acquire-wait-time-in-millis: 10000
+    enabled: false
+  process:
+    event-registry-start-process-instance-async: true
+    async:
+      executor:
+        default-async-job-acquire-wait-time-in-millis: 10000
+        timer-lock-time-in-millis: 3600000
+        async-job-lock-time-in-millis: 3600000
+        max-timer-jobs-per-acquisition: 512
+        max-async-jobs-due-per-acquisition: 512
+        task-executor.core-pool-size: 32
+        task-executor.max-pool-size: 32
+        task-executor.queue-capacity: 1024
+  task:
+    app:
+      kafka-enabled: true
+---
+trigger:
+  topic:  ${syspro-tenant-id}-TRIGGER-TOPIC
+  cs-topic:  ${cs-tenant-id}-CS-TRIGGER-TOPIC
+---
+process-event-log:
+  topic: WF-EVENT-LOG
+---
+kafka.topic.num-partitions: 3
+kafka.topic.replication-factor: 1
+
+syspro:
+  executor:
+    pool-size: 8
+---
+management.endpoints.web.exposure.include: prometheus,health,info,metric,flowable

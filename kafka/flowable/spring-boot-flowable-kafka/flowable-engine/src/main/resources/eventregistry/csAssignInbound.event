@@ -1,0 +1,17 @@
+{
+  "key": "assignResultEvent",
+  "name": "Assignment Result Event",
+  "inboundChannelKeys": [
+    "assignResultChannel"
+  ],
+  "payload": [
+    {
+      "name": "processInstanceId",
+      "type": "string"
+    },
+    {
+      "name": "eventKey",
+      "type": "string"
+    }
+  ]
+}

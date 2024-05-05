@@ -1,0 +1,12 @@
+{
+  "key": "subVerifyTriggerChannel",
+  "category": "channel",
+  "name": "Sub Verify Trigger Channel",
+  "channelType": "inbound",
+  "type": "kafka",
+  "topics": ["${syspro-tenant-id}-VERIFY"],
+  "deserializerType": "json",
+  "channelEventKeyDetection": {
+      "jsonField": "eventKey"
+  }
+}

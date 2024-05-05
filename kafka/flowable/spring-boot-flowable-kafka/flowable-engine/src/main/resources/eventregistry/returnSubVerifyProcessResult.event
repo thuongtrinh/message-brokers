@@ -1,0 +1,22 @@
+{
+  "key": "returnSubVerifyProcessResultEvent",
+  "name": "Send an return verify process Event",
+  "outboundChannelKeys": [
+      "returnSubVerifyProcessResultChannel"
+  ],
+  "correlationParameters": [],
+  "payload": [
+        {
+            "name": "processInstanceId",
+            "type": "string"
+        },
+        {
+            "name": "eventKey",
+            "type": "string"
+        },
+        {
+            "name": "verifyResult",
+            "type": "string"
+        }
+  ]
+}

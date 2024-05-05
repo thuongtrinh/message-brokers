@@ -1,0 +1,35 @@
+[
+  {
+    "k": "transactionconfig::1ae380df-0a22-4806-b7a1-6ccf292be9c3",
+    "v": {
+      "_class": "com.txt.eda.engine.entities.TransactionConfig",
+      "createdBy": "system",
+      "createdDate": 1656239006433,
+      "isSkipFCheck": false,
+      "transType": "T01",
+      "version": "1.0.0"
+    }
+  },
+  {
+    "k": "transactionconfig::3d7fdbfe-a96f-4659-9a2e-efe2d265fe18",
+    "v": {
+      "_class": "com.txt.eda.engine.entities.TransactionConfig",
+      "createdBy": "system",
+      "createdDate": 1656236619050,
+      "isSkipFCheck": true,
+      "transType": "T02",
+      "version": "1.0.0"
+    }
+  },
+  {
+    "k": "transactionconfig::b5b77578-e57b-464a-a482-858e29d56147",
+    "v": {
+      "_class": "com.txt.eda.engine.entities.TransactionConfig",
+      "createdBy": "system",
+      "createdDate": 1657971000359,
+      "isSkipFCheck": true,
+      "transType": "T01",
+      "version": "1.0.0"
+    }
+  }
+]

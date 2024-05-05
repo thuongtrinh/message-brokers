@@ -1,0 +1,119 @@
+{
+	"info": {
+		"_postman_id": "12ad3bd9-28a9-4477-9334-e4150bb33478",
+		"name": "Flowable",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2782954"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8080/submit",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"11\",\r\n    \"author\": \"bbb\",\r\n    \"url\": \"ttttt\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/submit",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/tasks?assignee=editors",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/tasks?assignee=editors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"tasks"
+					],
+					"query": [
+						{
+							"key": "assignee",
+							"value": "editors"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8082/submit-topic-trigger",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//var current_timestamp = new Date();\r",
+							"// postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());\r",
+							"\r",
+							"var current_timestamp = require('moment');\r",
+							"pm.environment.set('current_timestamp', current_timestamp().format((\"YYYY-MM-DD HH:mm:sss\")));\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"body\": {\r\n        \"exchangeId\": \"\",\r\n        \"correlationId\": \"\",\r\n        \"resource\": \"SYSPRO\",\r\n        \"createdDate\": \"{{current_timestamp}}\",\r\n        \"createdBy\": \"auto\",\r\n        \"transType\": \"T02\",\r\n        \"category\": \"CT5\",\r\n        \"payload\": {\r\n            \"idNumber\": \"0490085478\",\r\n            \"name\": \"THUONGTX\",\r\n            \"age\": \"33\",\r\n            \"country\": \"VN\",\r\n            \"job\": \"IT\",\r\n            \"note\": \"java developer\"\r\n        }\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8181/submit-topic-trigger",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8181",
+					"path": [
+						"submit-topic-trigger"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

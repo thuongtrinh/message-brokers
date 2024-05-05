@@ -1,0 +1,14 @@
+1. Couchbase
+http://localhost:8091/ui/index.html
+
+2. Kafdrop
+http://localhost:9000/
+
+3. Flowable
+http://localhost:8081/flowable-ui/#/
+
+4.postgres for flowable-ui
+http://localhost:5433/
+
+5. Swagger Rest-api
+http://localhost:8181/swagger-ui/index.html#/

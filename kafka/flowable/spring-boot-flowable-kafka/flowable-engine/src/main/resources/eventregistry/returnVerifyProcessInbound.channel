@@ -1,0 +1,12 @@
+{
+  "key": "returnVerifyProcessTriggerChannel",
+  "category": "channel",
+  "name": "Return Verify Process Trigger Channel",
+  "channelType": "inbound",
+  "type": "kafka",
+  "topics": ["${syspro-tenant-id}-RETURN-VERIFY-PROCESS"],
+  "deserializerType": "json",
+  "channelEventKeyDetection": {
+      "jsonField": "eventKey"
+  }
+}

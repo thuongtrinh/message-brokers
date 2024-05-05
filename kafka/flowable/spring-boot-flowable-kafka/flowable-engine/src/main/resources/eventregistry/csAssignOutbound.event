@@ -1,0 +1,22 @@
+{
+  "key": "assignEvent",
+  "name": "Send a Assignment Event",
+  "outboundChannelKeys": [
+    "assignChannel"
+  ],
+  "correlationParameters": [],
+  "payload": [
+    {
+      "name": "processInstanceId",
+      "type": "string"
+    },
+    {
+      "name": "transType",
+      "type": "string"
+    },
+    {
+      "name": "resource",
+      "type": "string"
+    }
+  ]
+}

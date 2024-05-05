@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [${HOSTNAME}] [%thread] %level %logger{36}@%method:%line - %msg%n</pattern>
+    </layout>
+  </appender>
+  
+  <!--<appender name="LOKI_SYS" class="com.github.loki4j.logback.Loki4jAppender">
+    <http class="com.github.loki4j.logback.ApacheHttpSender">
+        <url>http://loki-cluster-service:3100/loki/api/v1/push</url>
+    </http>
+    <format class="com.github.loki4j.logback.ProtobufEncoder">
+        <label>
+            <pattern>app=flowable-check-sys-service,host=${HOSTNAME},level=%level</pattern>
+        </label>
+        <message>
+            <pattern>l=%level h=${HOSTNAME} c=%logger{20} t=%thread | %msg %ex</pattern>
+        </message>
+        <sortByTime>true</sortByTime>
+    </format>
+ </appender>-->
+
+  <logger name="com.txt.eda" level="INFO"/>
+  <logger name="javax.activation" level="WARN"/>
+  <logger name="javax.mail" level="WARN"/>
+  <logger name="javax.xml.bind" level="WARN"/>
+  <logger name="ch.qos.logback" level="WARN"/>
+  <logger name="com.codahale.metrics" level="WARN"/>
+  <logger name="com.ryantenney" level="WARN"/>
+  <logger name="com.sun" level="WARN"/>
+  <logger name="com.zaxxer" level="WARN"/>
+  <logger name="io.undertow" level="WARN"/>
+  <logger name="io.undertow.websockets.jsr" level="ERROR"/>
+  <logger name="org.apache" level="INFO"/>
+  <logger name="org.flowable" level="INFO"/>
+  <logger name="org.apache.catalina.startup.DigesterFactory" level="OFF"/>
+  <logger name="org.bson" level="WARN"/>
+  <logger name="org.hibernate.validator" level="WARN"/>
+  <logger name="org.hibernate" level="WARN"/>
+  <logger name="org.hibernate.ejb.HibernatePersistence" level="OFF"/>
+  <logger name="org.springframework" level="WARN"/>
+  <logger name="org.springframework.web" level="WARN"/>
+  <logger name="org.springframework.security" level="WARN"/>
+  <logger name="org.springframework.cache" level="WARN"/>
+  <logger name="org.xnio" level="WARN"/>
+  <logger name="springfox" level="WARN"/>
+  <logger name="sun.rmi" level="WARN"/>
+  <logger name="sun.rmi.transport" level="WARN"/>
+
+  <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+    <resetJUL>true</resetJUL>
+  </contextListener>
+
+  <root level="INFO">
+    <appender-ref ref="STDOUT" />
+   <!-- <appender-ref ref="LOKI_SYS" />-->
+  </root>
+
+</configuration>

@@ -1,0 +1,58 @@
+spring:
+  application.name: DM Flowable Rest
+  liquibase:
+    enabled: false
+    changeLog: classpath:db/changelog/db.changelog-master.xml
+  kafka:
+    producer:
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      bootstrap-servers:
+        - localhost:9092
+    consumer:
+      group-id: dmflowable
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+      bootstrap-servers:
+        - localhost:9092
+    listener:
+      missing-topics-fatal: false
+    bootstrap-servers:
+      - localhost:9092
+  datasource:
+    url: jdbc:postgresql://localhost:5433/flowable
+    username: flowable
+    password: flowable
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-test-query: SELECT 1
+      minimum-idle: 5
+      maximum-pool-size: 50
+      pool-name: flowableDBPool1
+      auto-commit: false
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+  couchbase:
+    connectionString: localhost
+    bucketName: submission
+    username: couchbase
+    password: couchbase
+    autoIndex: true
+
+syspro-version: 1.0.0
+syspro-tenant-id: sys-${syspro-version}
+cs-tenant-id: sys-${syspro-version}
+  #cs-${syspro-version}
+syspro-deployment-mode: default-tenantid
+
+flowable:
+  database-schema-update: ignore
+
+trigger:
+  topic:  ${syspro-tenant-id}-TRIGGER-TOPIC
+  cs-topic:  ${cs-tenant-id}-CS-TRIGGER-TOPIC

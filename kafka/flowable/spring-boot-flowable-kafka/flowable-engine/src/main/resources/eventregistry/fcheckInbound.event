@@ -1,0 +1,21 @@
+{
+  "key": "fcheckResultEvent",
+  "name": "First Check Result Event",
+  "inboundChannelKeys": [
+    "fcheckResultChannel"
+  ],
+  "payload": [
+    {
+      "name": "processInstanceId",
+      "type": "string"
+    },
+    {
+      "name": "eventKey",
+      "type": "string"
+    },
+    {
+      "name": "fcheckResult",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "key": "verifyRequestEvent",
+  "name": "Verify event",
+  "outboundChannelKeys": [
+      "verifyRequestChannel"
+   ],
+  "correlationParameters": [],
+  "payload": [
+      {
+        "name": "processInstanceId",
+        "type": "string"
+      },
+      {
+         "name": "eventKey",
+         "type": "string"
+      },
+      {
+         "name": "category",
+         "type": "string"
+      },
+      {
+        "name": "transType",
+        "type": "string"
+      },
+      {
+        "name": "resource",
+        "type": "string"
+      }
+  ]
+}

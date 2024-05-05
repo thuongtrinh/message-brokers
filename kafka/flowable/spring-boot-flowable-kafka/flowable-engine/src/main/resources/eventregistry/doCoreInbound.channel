@@ -1,0 +1,12 @@
+{
+  "key": "doCoreResultChannel",
+  "category": "channel",
+  "name": "Listening Result From DoCore Service Channel",
+  "channelType": "inbound",
+  "type": "kafka",
+  "topics": ["${syspro-tenant-id}-DOCORE-OUT"],
+  "deserializerType": "json",
+  "channelEventKeyDetection": {
+      "jsonField": "eventKey"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "key": "assignResultChannel",
+  "category": "channel",
+  "name": "Listening Result From Assignment Service Channel",
+  "channelType": "inbound",
+  "type": "kafka",
+  "topics": ["${cs-tenant-id}-ASSIGNMENT-OUT"],
+  "deserializerType": "json",
+  "channelEventKeyDetection": {
+      "jsonField": "eventKey"
+  }
+}

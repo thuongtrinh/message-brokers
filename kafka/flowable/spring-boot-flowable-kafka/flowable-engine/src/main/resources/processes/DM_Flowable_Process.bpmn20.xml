@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://flowable.org/test" exporter="Flowable Open Source Modeler" exporterVersion="6.7.2">
+  <collaboration id="Collaboration">
+    <participant id="dm-flowable-process-collab" name="DM Flowable Process" processRef="dm-flowable-process"></participant>
+  </collaboration>
+  <process id="dm-flowable-process" name="DM Flowable Process" isExecutable="true">
+    <laneSet id="laneSet_dm-flowable-process">
+      <lane id="system-stage" name="Systems">
+        <flowNodeRef>workflowStage_start-event</flowNodeRef>
+        <flowNodeRef>in-progress-event</flowNodeRef>
+        <flowNodeRef>initialProcessData</flowNodeRef>
+        <flowNodeRef>complete-case</flowNodeRef>
+        <flowNodeRef>workflowStage_event-fcheck</flowNodeRef>
+        <flowNodeRef>workflowStage_event-do-core</flowNodeRef>
+        <flowNodeRef>workflowStage_aq</flowNodeRef>
+        <flowNodeRef>send-verify</flowNodeRef>
+        <flowNodeRef>gw-start-process-to-in-progress-event</flowNodeRef>
+        <flowNodeRef>gw-to-fcheck</flowNodeRef>
+        <flowNodeRef>gw-to-init-data</flowNodeRef>
+        <flowNodeRef>gw-to-do-core-direct</flowNodeRef>
+        <flowNodeRef>gw-to-do-core</flowNodeRef>
+        <flowNodeRef>gw-to-system-end-event</flowNodeRef>
+        <flowNodeRef>gw-aq</flowNodeRef>
+        <flowNodeRef>gw-qa-to-completed2</flowNodeRef>
+        <flowNodeRef>gw-qa-to-completed</flowNodeRef>
+        <flowNodeRef>gw-verify-to-completed</flowNodeRef>
+      </lane>
+      <lane id="manual-stage" name="Manual">
+        <flowNodeRef>system-end-event</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="workflowStage_start-event" name="1.Trigger (Start Process)">
+      <extensionElements>
+        <flowable:eventType xmlns:flowable="http://flowable.org/bpmn"><![CDATA[triggerEvent]]></flowable:eventType>
+        <flowable:eventName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Trigger A Process Event]]></flowable:eventName>
+        <flowable:eventOutParameter xmlns:flowable="http://flowable.org/bpmn" source="transType" sourceType="string" target="transType"></flowable:eventOutParameter>
+        <flowable:eventOutParameter xmlns:flowable="http://flowable.org/bpmn" source="payload" sourceType="string" target="payload"></flowable:eventOutParameter>
+        <flowable:eventOutParameter xmlns:flowable="http://flowable.org/bpmn" source="correlationId" sourceType="string" target="correlationId"></flowable:eventOutParameter>
+        <flowable:eventOutParameter xmlns:flowable="http://flowable.org/bpmn" source="exchangeId" sourceType="string" target="exchangeId"></flowable:eventOutParameter>
+        <flowable:eventOutParameter xmlns:flowable="http://flowable.org/bpmn" source="resource" sourceType="string" target="resource"></flowable:eventOutParameter>
+        <flowable:eventOutParameter xmlns:flowable="http://flowable.org/bpmn" source="createdDate" sourceType="string" target="createdDate"></flowable:eventOutParameter>
+        <flowable:eventOutParameter xmlns:flowable="http://flowable.org/bpmn" source="createdBy" sourceType="string" target="createdBy"></flowable:eventOutParameter>
+        <flowable:eventOutParameter xmlns:flowable="http://flowable.org/bpmn" source="fix" sourceType="string" target="fix"></flowable:eventOutParameter>
+        <flowable:eventOutParameter xmlns:flowable="http://flowable.org/bpmn" source="category" sourceType="string" target="category"></flowable:eventOutParameter>
+        <flowable:channelKey xmlns:flowable="http://flowable.org/bpmn"><![CDATA[processTriggerChannel]]></flowable:channelKey>
+        <flowable:channelName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Process Trigger Channel]]></flowable:channelName>
+        <flowable:channelType xmlns:flowable="http://flowable.org/bpmn"><![CDATA[kafka]]></flowable:channelType>
+        <flowable:keyDetectionType xmlns:flowable="http://flowable.org/bpmn"><![CDATA[fixedValue]]></flowable:keyDetectionType>
+        <flowable:keyDetectionValue xmlns:flowable="http://flowable.org/bpmn"><![CDATA[eventKey]]></flowable:keyDetectionValue>
+      </extensionElements>
+    </startEvent>
+    <intermediateThrowEvent id="in-progress-event" name="In Progress" flowable:async="true">
+      <extensionElements>
+        <flowable:executionListener event="start" expression="#{trackSystemActivityLogService.trackInProgressEvent(execution)}"></flowable:executionListener>
+      </extensionElements>
+    </intermediateThrowEvent>
+    <serviceTask id="initialProcessData" name="2. Initial Process Data" flowable:expression="#{initialProcessDataService.execute(execution)}"></serviceTask>
+    <intermediateThrowEvent id="complete-case" name="Completed" flowable:async="true">
+      <extensionElements>
+        <flowable:executionListener event="end" expression="#{trackSystemActivityLogService.trackCompleteEvent(execution)}"></flowable:executionListener>
+      </extensionElements>
+    </intermediateThrowEvent>
+    <serviceTask id="workflowStage_event-fcheck" name="3. First Check Call" flowable:async="true" flowable:type="send-event" flowable:triggerable="true">
+      <extensionElements>
+        <flowable:eventType><![CDATA[fcheckEvent]]></flowable:eventType>
+        <flowable:triggerEventType><![CDATA[fcheckResultEvent]]></flowable:triggerEventType>
+        <flowable:eventInParameter sourceExpression="${execution.getProcessInstanceId()}" target="processInstanceId" targetType="string"></flowable:eventInParameter>
+        <flowable:eventInParameter sourceExpression="${transType}" target="transType" targetType="string"></flowable:eventInParameter>
+        <flowable:eventInParameter sourceExpression="${resource}" target="resource" targetType="string"></flowable:eventInParameter>
+        <flowable:eventInParameter sourceExpression="${is_skip_fcheck}" target="is_skip_fcheck" targetType="string"></flowable:eventInParameter>
+        <flowable:eventOutParameter source="fcheckResult" sourceType="string" target="fcheckResult"></flowable:eventOutParameter>
+        <flowable:eventName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Send a Check Event]]></flowable:eventName>
+        <flowable:channelKey xmlns:flowable="http://flowable.org/bpmn"><![CDATA[fcheckChannel]]></flowable:channelKey>
+        <flowable:channelName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Sent Event To Check Service Channel]]></flowable:channelName>
+        <flowable:channelType xmlns:flowable="http://flowable.org/bpmn"><![CDATA[kafka]]></flowable:channelType>
+        <flowable:triggerEventName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Check Result Event]]></flowable:triggerEventName>
+        <flowable:triggerChannelKey xmlns:flowable="http://flowable.org/bpmn"><![CDATA[fcheckResultChannel]]></flowable:triggerChannelKey>
+        <flowable:triggerChannelName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Listening Result From Check Service Channel]]></flowable:triggerChannelName>
+        <flowable:triggerChannelType xmlns:flowable="http://flowable.org/bpmn"><![CDATA[kafka]]></flowable:triggerChannelType>
+        <flowable:keyDetectionType xmlns:flowable="http://flowable.org/bpmn"><![CDATA[fixedValue]]></flowable:keyDetectionType>
+        <flowable:keyDetectionValue xmlns:flowable="http://flowable.org/bpmn"><![CDATA[eventKey]]></flowable:keyDetectionValue>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="workflowStage_event-do-core" name="4. Do Core Call" flowable:async="true" flowable:type="send-event" flowable:triggerable="true">
+      <extensionElements>
+        <flowable:eventType><![CDATA[doCoreEvent]]></flowable:eventType>
+        <flowable:triggerEventType><![CDATA[doCoreResultEvent]]></flowable:triggerEventType>
+        <flowable:eventInParameter sourceExpression="${execution.getProcessInstanceId()}" target="processInstanceId" targetType="string"></flowable:eventInParameter>
+        <flowable:eventInParameter sourceExpression="${transType}" target="transType" targetType="string"></flowable:eventInParameter>
+        <flowable:eventInParameter sourceExpression="${resource}" target="resource" targetType="string"></flowable:eventInParameter>
+        <flowable:eventOutParameter source="doCoreResult" sourceType="boolean" target="doCoreResult"></flowable:eventOutParameter>
+        <flowable:eventOutParameter source="is_skip_aq" sourceType="boolean" target="is_skip_aq"></flowable:eventOutParameter>
+        <flowable:eventOutParameter source="aq_assignee" sourceType="string" target="aq_assignee"></flowable:eventOutParameter>
+        <flowable:eventOutParameter source="candidate_group_aq" sourceType="string" target="candidate_group_aq"></flowable:eventOutParameter>
+        <flowable:eventName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Send a Do Core Event]]></flowable:eventName>
+        <flowable:channelKey xmlns:flowable="http://flowable.org/bpmn"><![CDATA[doCoreChannel]]></flowable:channelKey>
+        <flowable:channelName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Sent Event Do Core Service Channel]]></flowable:channelName>
+        <flowable:channelType xmlns:flowable="http://flowable.org/bpmn"><![CDATA[kafka]]></flowable:channelType>
+        <flowable:triggerEventName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Do Core Result Event]]></flowable:triggerEventName>
+        <flowable:triggerChannelKey xmlns:flowable="http://flowable.org/bpmn"><![CDATA[doCoreResultChannel]]></flowable:triggerChannelKey>
+        <flowable:triggerChannelName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Listening Result From Do Core Service Channel]]></flowable:triggerChannelName>
+        <flowable:triggerChannelType xmlns:flowable="http://flowable.org/bpmn"><![CDATA[kafka]]></flowable:triggerChannelType>
+        <flowable:keyDetectionType xmlns:flowable="http://flowable.org/bpmn"><![CDATA[fixedValue]]></flowable:keyDetectionType>
+        <flowable:keyDetectionValue xmlns:flowable="http://flowable.org/bpmn"><![CDATA[eventKey]]></flowable:keyDetectionValue>
+      </extensionElements>
+    </serviceTask>
+    <userTask id="workflowStage_aq" name="5. AQ" flowable:assignee="${aq_assignee}" flowable:candidateGroups="${candidate_group_aq}" flowable:category="${category}-AQ" flowable:formFieldValidation="true" flowable:skipExpression="${is_skip_aq}">
+      <extensionElements>
+        <flowable:executionListener event="take" expression="#{trackSystemActivityLogService.trackAQ(execution)}"></flowable:executionListener>
+        <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+      </extensionElements>
+    </userTask>
+    <serviceTask id="send-verify" name="6. Verify Call" flowable:async="true" flowable:type="send-event" flowable:triggerable="true">
+      <extensionElements>
+        <flowable:eventType><![CDATA[verifyRequestEvent]]></flowable:eventType>
+        <flowable:triggerEventType><![CDATA[returnVerifyProcessTriggerEvent]]></flowable:triggerEventType>
+        <flowable:eventInParameter sourceExpression="${execution.getProcessInstanceId()}" target="processInstanceId" targetType="string"></flowable:eventInParameter>
+        <flowable:eventInParameter source="subVerifyTriggerEvent" target="eventKey" targetType="string"></flowable:eventInParameter>
+        <flowable:eventInParameter sourceExpression="${resource}" target="resource" targetType="string"></flowable:eventInParameter>
+        <flowable:eventInParameter sourceExpression="${category}" target="category" targetType="string"></flowable:eventInParameter>
+        <flowable:eventInParameter sourceExpression="${transType}" target="transType" targetType="string"></flowable:eventInParameter>
+        <flowable:eventOutParameter source="verifyResult" sourceType="string" target="verifyResult"></flowable:eventOutParameter>
+        <flowable:eventName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Send Verify Event]]></flowable:eventName>
+        <flowable:channelKey xmlns:flowable="http://flowable.org/bpmn"><![CDATA[verifyRequestChannel]]></flowable:channelKey>
+        <flowable:channelName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Sent Event To Verify Sub Process Chanel]]></flowable:channelName>
+        <flowable:channelType xmlns:flowable="http://flowable.org/bpmn"><![CDATA[kafka]]></flowable:channelType>
+        <flowable:triggerEventName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Return Process Event]]></flowable:triggerEventName>
+        <flowable:triggerChannelKey xmlns:flowable="http://flowable.org/bpmn"><![CDATA[returnVerifyProcessTriggerChannel]]></flowable:triggerChannelKey>
+        <flowable:triggerChannelName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Listening Send Return Process Channel]]></flowable:triggerChannelName>
+        <flowable:triggerChannelType xmlns:flowable="http://flowable.org/bpmn"><![CDATA[kafka]]></flowable:triggerChannelType>
+        <flowable:keyDetectionType xmlns:flowable="http://flowable.org/bpmn"><![CDATA[fixedValue]]></flowable:keyDetectionType>
+        <flowable:keyDetectionValue xmlns:flowable="http://flowable.org/bpmn"><![CDATA[eventKey]]></flowable:keyDetectionValue>
+      </extensionElements>
+    </serviceTask>
+    <endEvent id="system-end-event"></endEvent>
+    <sequenceFlow id="gw-start-process-to-in-progress-event" sourceRef="workflowStage_start-event" targetRef="in-progress-event"></sequenceFlow>
+    <sequenceFlow id="gw-to-fcheck" sourceRef="initialProcessData" targetRef="workflowStage_event-fcheck">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!is_skip_fcheck }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="gw-to-init-data" sourceRef="in-progress-event" targetRef="initialProcessData"></sequenceFlow>
+    <sequenceFlow id="gw-to-do-core-direct" sourceRef="initialProcessData" targetRef="workflowStage_event-do-core">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${is_skip_fcheck }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="gw-to-do-core" sourceRef="workflowStage_event-fcheck" targetRef="workflowStage_event-do-core"></sequenceFlow>
+    <sequenceFlow id="gw-to-system-end-event" sourceRef="complete-case" targetRef="system-end-event"></sequenceFlow>
+    <sequenceFlow id="gw-aq" sourceRef="workflowStage_event-do-core" targetRef="workflowStage_aq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!var:getOrDefault(is_skip_aq, true) }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="gw-qa-to-completed2" sourceRef="workflowStage_event-do-core" targetRef="send-verify">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${var:getOrDefault(is_skip_aq, false) }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="gw-qa-to-completed" sourceRef="workflowStage_aq" targetRef="complete-case"></sequenceFlow>
+    <sequenceFlow id="gw-verify-to-completed" sourceRef="send-verify" targetRef="complete-case"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Collaboration">
+    <bpmndi:BPMNPlane bpmnElement="Collaboration" id="BPMNPlane_Collaboration">
+      <bpmndi:BPMNShape bpmnElement="dm-flowable-process-collab" id="BPMNShape_dm-flowable-process-collab">
+        <omgdc:Bounds height="549.9999999999998" width="1170.6640885439697" x="45.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="system-stage" id="BPMNShape_system-stage">
+        <omgdc:Bounds height="392.87532533027064" width="1140.6640885439697" x="75.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="workflowStage_start-event" id="BPMNShape_workflowStage_start-event">
+        <omgdc:Bounds height="30.0" width="30.5" x="135.0" y="82.99029637442503"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="in-progress-event" id="BPMNShape_in-progress-event">
+        <omgdc:Bounds height="30.0" width="30.0" x="255.0" y="82.99029637442507"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="initialProcessData" id="BPMNShape_initialProcessData">
+        <omgdc:Bounds height="80.0" width="100.0" x="375.0" y="57.99029637442503"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="complete-case" id="BPMNShape_complete-case">
+        <omgdc:Bounds height="30.0" width="30.0" x="836.0" y="360.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="workflowStage_event-fcheck" id="BPMNShape_workflowStage_event-fcheck">
+        <omgdc:Bounds height="76.0" width="109.0" x="585.0" y="59.999999999999986"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="workflowStage_event-do-core" id="BPMNShape_workflowStage_event-do-core">
+        <omgdc:Bounds height="75.0" width="112.0" x="795.0" y="58.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="workflowStage_aq" id="BPMNShape_workflowStage_aq">
+        <omgdc:Bounds height="80.0" width="100.0" x="801.0" y="210.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="send-verify" id="BPMNShape_send-verify">
+        <omgdc:Bounds height="80.00000000000001" width="108.0" x="1020.0" y="57.99029637442503"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="manual-stage" id="BPMNShape_manual-stage">
+        <omgdc:Bounds height="157.12467466972913" width="1140.6640885439697" x="75.0" y="422.87532533027064"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="system-end-event" id="BPMNShape_system-end-event">
+        <omgdc:Bounds height="28.0" width="28.0" x="837.0" y="486.014460197105"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="gw-qa-to-completed" id="BPMNEdge_gw-qa-to-completed" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="15.0" flowable:targetDockerY="15.0">
+        <omgdi:waypoint x="851.0" y="289.95000000000005"></omgdi:waypoint>
+        <omgdi:waypoint x="851.0" y="360.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gw-to-init-data" id="BPMNEdge_gw-to-init-data" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="284.9499992392744" y="97.99029637442507"></omgdi:waypoint>
+        <omgdi:waypoint x="374.99999999995555" y="97.99029637442506"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gw-to-do-core-direct" id="BPMNEdge_gw-to-do-core-direct" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="56.0" flowable:targetDockerY="37.5">
+        <omgdi:waypoint x="474.949999999998" y="97.46354298377342"></omgdi:waypoint>
+        <omgdi:waypoint x="519.0" y="97.0"></omgdi:waypoint>
+        <omgdi:waypoint x="519.0" y="163.0"></omgdi:waypoint>
+        <omgdi:waypoint x="746.0" y="163.0"></omgdi:waypoint>
+        <omgdi:waypoint x="746.0" y="97.0"></omgdi:waypoint>
+        <omgdi:waypoint x="795.0" y="96.29928571428572"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gw-to-do-core" id="BPMNEdge_gw-to-do-core" flowable:sourceDockerX="54.5" flowable:sourceDockerY="38.0" flowable:targetDockerX="56.0" flowable:targetDockerY="37.5">
+        <omgdi:waypoint x="693.9499999999992" y="97.35579196217493"></omgdi:waypoint>
+        <omgdi:waypoint x="794.9999999999997" y="96.1613475177305"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gw-verify-to-completed" id="BPMNEdge_gw-verify-to-completed" flowable:sourceDockerX="54.0" flowable:sourceDockerY="40.00000000000001" flowable:targetDockerX="15.0" flowable:targetDockerY="15.0">
+        <omgdi:waypoint x="1074.0" y="137.94029637442503"></omgdi:waypoint>
+        <omgdi:waypoint x="1074.0" y="375.0"></omgdi:waypoint>
+        <omgdi:waypoint x="865.9499280969408" y="375.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gw-to-fcheck" id="BPMNEdge_gw-to-fcheck" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="54.5" flowable:targetDockerY="38.0">
+        <omgdi:waypoint x="474.9499999998155" y="97.99255602989108"></omgdi:waypoint>
+        <omgdi:waypoint x="584.9999999996419" y="97.99753451005202"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gw-to-system-end-event" id="BPMNEdge_gw-to-system-end-event" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="851.0" y="389.9499988308549"></omgdi:waypoint>
+        <omgdi:waypoint x="851.0" y="486.014460197105"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gw-qa-to-completed2" id="BPMNEdge_gw-qa-to-completed2" flowable:sourceDockerX="56.0" flowable:sourceDockerY="37.5" flowable:targetDockerX="54.0" flowable:targetDockerY="40.00000000000001">
+        <omgdi:waypoint x="906.9499999999994" y="96.12480754326943"></omgdi:waypoint>
+        <omgdi:waypoint x="1019.9999999999991" y="97.38726496537146"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gw-start-process-to-in-progress-event" id="BPMNEdge_gw-start-process-to-in-progress-event" flowable:sourceDockerX="15.25" flowable:sourceDockerY="15.0" flowable:targetDockerX="15.0" flowable:targetDockerY="15.0">
+        <omgdi:waypoint x="165.4499986607449" y="97.99029637442503"></omgdi:waypoint>
+        <omgdi:waypoint x="255.0" y="97.99029637442507"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gw-aq" id="BPMNEdge_gw-aq" flowable:sourceDockerX="56.0" flowable:sourceDockerY="37.5" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="851.0" y="132.95"></omgdi:waypoint>
+        <omgdi:waypoint x="851.0" y="210.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

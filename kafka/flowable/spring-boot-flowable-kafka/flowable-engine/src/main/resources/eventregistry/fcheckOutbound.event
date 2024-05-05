@@ -1,0 +1,26 @@
+{
+  "key": "fcheckEvent",
+  "name": "Send a Check Event",
+  "outboundChannelKeys": [
+    "fcheckChannel"
+  ],
+  "correlationParameters": [],
+  "payload": [
+    {
+      "name": "processInstanceId",
+      "type": "string"
+    },
+    {
+      "name": "transType",
+      "type": "string"
+    },
+    {
+      "name": "resource",
+      "type": "string"
+    },
+    {
+      "name": "is_skip_fcheck",
+      "type": "boolean"
+    }
+  ]
+}

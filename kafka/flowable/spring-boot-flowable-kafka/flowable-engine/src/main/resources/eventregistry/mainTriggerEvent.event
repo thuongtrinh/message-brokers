@@ -1,0 +1,51 @@
+{
+  "key": "triggerEvent",
+  "name": "Trigger A Process Event",
+  "inboundChannelKeys": [
+      "processTriggerChannel"
+  ],
+  "correlationParameters": [
+      {
+        "name": "transType",
+        "type": "string"
+      },
+      {
+        "name": "correlationId",
+        "type": "string"
+      }
+  ],
+  "payload": [
+    {
+        "name": "transType",
+        "type": "string"
+    },
+    {
+        "name": "correlationId",
+        "type": "string"
+    },
+    {
+        "name": "exchangeId",
+        "type": "string"
+    },
+    {
+        "name": "payload",
+        "type": "string"
+    },
+    {
+        "name": "resource",
+        "type": "string"
+    },
+    {
+        "name": "category",
+        "type": "string"
+    },
+    {
+        "name": "createdDate",
+        "type": "string"
+    },
+    {
+        "name": "createdBy",
+        "type": "string"
+    }
+  ]
+}
