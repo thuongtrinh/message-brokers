@@ -14,19 +14,19 @@ public class OrderManageService {
 
     private static final String SOURCE = "payment";
     private static final Logger LOG = LoggerFactory.getLogger(OrderManageService.class);
-    private CustomerRepository repository;
-    private KafkaTemplate<Long, Order> template;
+    private CustomerRepository customerRepository;
+    private KafkaTemplate<Long, Order> kafkaTemplate;
 
     @Value("${topic.payment}")
     private String paymentTopic;
 
-    public OrderManageService(CustomerRepository repository, KafkaTemplate<Long, Order> template) {
-        this.repository = repository;
-        this.template = template;
+    public OrderManageService(CustomerRepository customerRepository, KafkaTemplate<Long, Order> kafkaTemplate) {
+        this.customerRepository = customerRepository;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     public void reserve(Order order) {
-        Customer customer = repository.findById(order.getCustomerId()).orElseThrow();
+        Customer customer = customerRepository.findById(order.getCustomerId()).orElseThrow();
         LOG.info("Found: {}", customer);
 
         if (order.getPrice() < customer.getAmountAvailable()) {
@@ -37,22 +37,22 @@ public class OrderManageService {
             order.setStatus("REJECT");
         }
         order.setSource(SOURCE);
-        repository.save(customer);
-        template.send(paymentTopic, order.getId(), order);
+        customerRepository.save(customer);
+        kafkaTemplate.send(paymentTopic, order.getId(), order);
         LOG.info("Sent: {}", order);
     }
 
     public void confirm(Order order) {
-        Customer customer = repository.findById(order.getCustomerId()).orElseThrow();
+        Customer customer = customerRepository.findById(order.getCustomerId()).orElseThrow();
         LOG.info("Found: {}", customer);
 
         if (order.getStatus().equals("CONFIRMED")) {
             customer.setAmountReserved(customer.getAmountReserved() - order.getPrice());
-            repository.save(customer);
+            customerRepository.save(customer);
         } else if (order.getStatus().equals("ROLLBACK") && !order.getSource().equals(SOURCE)) {
             customer.setAmountReserved(customer.getAmountReserved() - order.getPrice());
             customer.setAmountAvailable(customer.getAmountAvailable() + order.getPrice());
-            repository.save(customer);
+            customerRepository.save(customer);
         }
     }
 

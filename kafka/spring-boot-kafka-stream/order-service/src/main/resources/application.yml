@@ -20,7 +20,7 @@ spring:
         default.key.serde: org.apache.kafka.common.serialization.Serdes$LongSerde
         default.value.serde: org.springframework.kafka.support.serializer.JsonSerde
         spring.json.trusted.packages: "*"
-      state-dir: D:/github/sample-microservice-kafka/spring-boot-kafka-stream/tmp/kafka-streams/
+      state-dir: D:/github/data-log/message-brokers/spring-boot-kafka-stream/tmp/kafka-streams/
 
 spring.output.ansi.enabled: ALWAYS
 #spring.cloud.stream.kafka.binder.replicationFactor: 1

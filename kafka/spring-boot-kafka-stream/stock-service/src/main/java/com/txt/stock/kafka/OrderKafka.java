@@ -23,7 +23,7 @@ public class OrderKafka {
     OrderManageService orderManageService;
 
     @Autowired
-    private ProductRepository repository;
+    private ProductRepository productRepository;
 
     @KafkaListener(id = "orders", topics = "${topic.order}", groupId = "stock")
     public void onEvent(Order o) {
@@ -40,7 +40,7 @@ public class OrderKafka {
         for (int i = 0; i < 1000; i++) {
             int count = r.nextInt(1000);
             Product p = new Product(null, "Product" + i, count, 0);
-            repository.save(p);
+            productRepository.save(p);
         }
     }
 }
