@@ -30,7 +30,14 @@ spring:
         totalPerProduct-in-1.destination: orders.sell
         latestPerProduct-in-0.destination: transactions
         latestPerProduct-in-1.destination: orders.sell
-
+  h2:
+    console.enabled: true
+    path: /h2-console
+    settings.trace: false
+    settings.web-allow-others: false
+  datasource:
+    username: sa
+    url: jdbc:h2:mem:kafkadb;DB_CLOSE_ON_EXIT=FALSE
 
 logging.pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%15.15t]){yellow} %clr(:){red} %clr(%m){faint}%n"
 
