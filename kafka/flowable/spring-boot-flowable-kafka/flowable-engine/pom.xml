@@ -86,6 +86,27 @@
             <artifactId>hibernate-validator-annotation-processor</artifactId>
         </dependency>
 
+        <!-- Flowable Script Format: groovy -->
+        <!--<dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-jsr223</artifactId>
+            <version>3.0.15</version>
+            <scope>runtime</scope>
+        </dependency>-->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>3.0.25</version>
+            <type>pom</type>
+        </dependency>
+
+        <!-- Flowable Script Format: JavaScript -->
+        <!--<dependency>
+            <groupId>org.openjdk.nashorn</groupId>
+            <artifactId>nashorn-core</artifactId>
+            <version>15.6</version>
+        </dependency>-->
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

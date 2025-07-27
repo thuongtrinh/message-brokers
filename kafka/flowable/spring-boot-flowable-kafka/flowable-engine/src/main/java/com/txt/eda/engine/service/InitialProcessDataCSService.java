@@ -1,5 +1,6 @@
 package com.txt.eda.engine.service;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.txt.eda.engine.entities.TransactionConfig;
 import com.txt.eda.engine.repositories.TransactionConfigRespository;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,7 @@ public class InitialProcessDataCSService {
 
     public void execute(DelegateExecution execution) {
         execution.getParent().setVariable(FIX, "FIX");
+        execution.getParent().setVariable(IS_LOGIC_CHECK, Boolean.FALSE);
         ProcessInstanceInitVariable processInstanceInitVariable = getProcessInstanceInitVariable(execution);
         TransactionConfig transactionConfig = getTransactionWorkflowConfig(processInstanceInitVariable, version);
     }

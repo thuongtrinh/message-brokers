@@ -16,7 +16,7 @@ public class JsonHelper {
 
     private static final Map<String, ObjectMapper> MAP_OBJECT_MAPPER = new HashMap<String, ObjectMapper>();
 
-    public ObjectMapper getObjectMapper(String clazzName) {
+    public static ObjectMapper getObjectMapper(String clazzName) {
         ObjectMapper om = MAP_OBJECT_MAPPER.get(clazzName);
         if (om == null) {
             ObjectMapper mapper = new ObjectMapper();
@@ -26,7 +26,7 @@ public class JsonHelper {
         return om;
     }
 
-    public String objectToJson(Object obj) {
+    public static String objectToJson(Object obj) {
         if (obj == null) {
             return null;
         }
@@ -39,7 +39,7 @@ public class JsonHelper {
         return null;
     }
 
-    public Object jsonToObject(String json, Class<?> clazz) {
+    public static Object jsonToObject(String json, Class<?> clazz) {
         if (json == null) {
             return null;
         }

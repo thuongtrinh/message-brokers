@@ -17,6 +17,10 @@
     {
       "name": "resource",
       "type": "string"
+    },
+    {
+      "name": "is_logic_check",
+      "type": "boolean"
     }
   ]
 }

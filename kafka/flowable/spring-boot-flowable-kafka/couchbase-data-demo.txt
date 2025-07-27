@@ -33,3 +33,26 @@
     }
   }
 ]
+
+--------------------------------------------------------------------
+SELECT meta().id k, p v FROM  submission p where _class like '%TransactionConfig%'
+--------------------------------------------------------------------
+
+INSERT INTO submission(key _k, value _v)
+SELECT a._k, a._v FROM [
+  {
+    "_k": "TransactionConfig::062eab20-91ca-48cb-b62f-dff7ccf45ba0",
+    "_v": {
+      "_class": "com.txt.eda.engine.entities.TransactionConfig",
+         "createdBy": "system",
+      "createdDate": 1656239006433,
+      "isSkipFCheck": false,
+      "transType": "LOGIC_CHECk",
+      "version": "1.0.0"
+    }
+  }
+] as a;
+
+--------------------------------------------------------------------
+-Dspring.profiles.active=local
+--------------------------------------------------------------------

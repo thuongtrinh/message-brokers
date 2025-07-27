@@ -9,13 +9,13 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>sp-flowable-engine</module>
-        <module>sp-flowable-rest</module>
-        <module>sp-flowable-assignment-service</module>
-        <module>sp-flowable-check-service</module>
-        <module>sp-flowable-common</module>
-        <module>sp-flowable-docore-service</module>
-        <module>sp-flowable-verify-service</module>
+        <module>flowable-engine</module>
+        <module>flowable-rest</module>
+        <module>flowable-assignment-service</module>
+        <module>flowable-check-service</module>
+        <module>flowable-common</module>
+        <module>flowable-docore-service</module>
+        <module>flowable-verify-service</module>
     </modules>
 
 </project>

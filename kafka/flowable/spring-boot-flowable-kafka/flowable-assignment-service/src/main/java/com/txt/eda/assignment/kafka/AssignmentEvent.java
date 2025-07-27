@@ -1,5 +1,6 @@
 package com.txt.eda.assignment.kafka;
 
+import com.txt.eda.assignment.common.Constants;
 import com.txt.eda.assignment.dto.AssignmentEventDTO;
 import com.txt.eda.assignment.dto.AssignmentEventResponse;
 import com.txt.eda.assignment.common.JsonHelper;
@@ -13,6 +14,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class AssignmentEvent {
@@ -57,7 +61,24 @@ public class AssignmentEvent {
         assignmentEventResponse.setEventKey(topicOutKey);
         assignmentEventResponse.setProcessInstanceId(event.getProcessInstanceId());
         assignmentEventResponse.setAssignResult("AssignmentResult: 12345-abc");
+
+        boolean isLogic = event.getIsLogicCheck() != null && event.getIsLogicCheck();
+        if (Constants.TRANSACTION_LOGIC_CHECK.equals(event.getTransType()) && !isLogic) {
+            assignmentEventResponse.setLogicCheck(Boolean.TRUE);
+            assignmentEventResponse.setValueLogicCheck(getLogicCheck());
+        } else {
+            assignmentEventResponse.setLogicCheck(Boolean.FALSE);
+        }
+
         return jsonHelper.objectToJson(assignmentEventResponse);
+    }
+
+    private String getLogicCheck() {
+        Map<String, String> mapValueCheck = new HashMap<>();
+        mapValueCheck.put("resource", "NEW_RESOURCE_TEST");
+        String valueCheck = JsonHelper.objectToJson(mapValueCheck);
+        System.out.println(valueCheck);
+        return valueCheck;
     }
 
 }

@@ -11,10 +11,17 @@
         <flowNodeRef>initialProcessDataCS</flowNodeRef>
         <flowNodeRef>workflowStage_event-assign</flowNodeRef>
         <flowNodeRef>system-cs-end-event</flowNodeRef>
+        <flowNodeRef>sid-B449D793-EA01-4DC4-BA40-E1B34B054D9F</flowNodeRef>
+        <flowNodeRef>sid-track-assignment</flowNodeRef>
+        <flowNodeRef>script-logic-check</flowNodeRef>
+        <flowNodeRef>gw-to-assign</flowNodeRef>
+        <flowNodeRef>sid-0C106586-DAAA-4AA2-B28E-F10CC1871419</flowNodeRef>
         <flowNodeRef>gw-start-process-cs-to-in-progress-event</flowNodeRef>
         <flowNodeRef>gw-to-init-data-cs</flowNodeRef>
+        <flowNodeRef>sid-3BE47DD8-ECD1-4CAB-92B8-9FF1499EA27A</flowNodeRef>
         <flowNodeRef>gw-to-complete-cs</flowNodeRef>
-        <flowNodeRef>gw-to-assign</flowNodeRef>
+        <flowNodeRef>gw-to-logic-check</flowNodeRef>
+        <flowNodeRef>sid-3AB45425-876E-4FC1-9F4F-B64DB4A139A9</flowNodeRef>
       </lane>
       <lane id="manual-stage" name="Manual"></lane>
     </laneSet>
@@ -51,6 +58,9 @@
         <flowable:eventInParameter sourceExpression="${execution.getProcessInstanceId()}" target="processInstanceId" targetType="string"></flowable:eventInParameter>
         <flowable:eventInParameter sourceExpression="${transType}" target="transType" targetType="string"></flowable:eventInParameter>
         <flowable:eventInParameter sourceExpression="${resource}" target="resource" targetType="string"></flowable:eventInParameter>
+        <flowable:eventInParameter sourceExpression="${is_logic_check}" target="is_logic_check" targetType="boolean"></flowable:eventInParameter>
+        <flowable:eventOutParameter source="valueLogicCheck" sourceType="string" target="valueLogicCheck"></flowable:eventOutParameter>
+        <flowable:eventOutParameter source="is_logic_check" sourceType="boolean" target="is_logic_check"></flowable:eventOutParameter>
         <flowable:eventName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Send a AssignEvent]]></flowable:eventName>
         <flowable:channelKey xmlns:flowable="http://flowable.org/bpmn"><![CDATA[assignChannel]]></flowable:channelKey>
         <flowable:channelName xmlns:flowable="http://flowable.org/bpmn"><![CDATA[Sent Event To Assign Service Channel]]></flowable:channelName>
@@ -64,10 +74,41 @@
       </extensionElements>
     </serviceTask>
     <endEvent id="system-cs-end-event"></endEvent>
+    <exclusiveGateway id="sid-B449D793-EA01-4DC4-BA40-E1B34B054D9F" default="sid-3BE47DD8-ECD1-4CAB-92B8-9FF1499EA27A"></exclusiveGateway>
+    <intermediateThrowEvent id="sid-track-assignment" name="trackAssignment" flowable:async="true">
+      <extensionElements>
+        <flowable:executionListener event="start" expression="#{trackSystemActivityLogService.trackAssignment(execution)}"></flowable:executionListener>
+      </extensionElements>
+    </intermediateThrowEvent>
+    <scriptTask id="script-logic-check" name="Logic Check" scriptFormat="groovy" flowable:autoStoreVariables="false">
+      <script><![CDATA[def jsonString = execution.getVariable("valueLogicCheck")
+def valueFromMap = null
+if (jsonString != null) {
+    try {
+        def jsonObject = new groovy.json.JsonSlurper().parseText(jsonString)
+        def keyName = "resource"
+        if (jsonObject != null && jsonObject.containsKey(keyName)) {
+            valueFromMap = jsonObject[keyName]
+        }
+    } catch (e) {
+        // handle parse error
+        valueFromMap = null
+    }
+}
+if (valueFromMap != null) {
+    execution.setVariable("resourceNew", valueFromMap)
+}]]></script>
+    </scriptTask>
+    <sequenceFlow id="gw-to-assign" sourceRef="initialProcessDataCS" targetRef="sid-track-assignment"></sequenceFlow>
+    <sequenceFlow id="sid-0C106586-DAAA-4AA2-B28E-F10CC1871419" sourceRef="sid-track-assignment" targetRef="workflowStage_event-assign"></sequenceFlow>
     <sequenceFlow id="gw-start-process-cs-to-in-progress-event" sourceRef="workflowStage_start-cs-event" targetRef="in-progress-cs-event"></sequenceFlow>
     <sequenceFlow id="gw-to-init-data-cs" sourceRef="in-progress-cs-event" targetRef="initialProcessDataCS"></sequenceFlow>
-    <sequenceFlow id="gw-to-complete-cs" sourceRef="workflowStage_event-assign" targetRef="system-cs-end-event"></sequenceFlow>
-    <sequenceFlow id="gw-to-assign" sourceRef="initialProcessDataCS" targetRef="workflowStage_event-assign"></sequenceFlow>
+    <sequenceFlow id="sid-3BE47DD8-ECD1-4CAB-92B8-9FF1499EA27A" sourceRef="sid-B449D793-EA01-4DC4-BA40-E1B34B054D9F" targetRef="system-cs-end-event"></sequenceFlow>
+    <sequenceFlow id="gw-to-complete-cs" sourceRef="workflowStage_event-assign" targetRef="sid-B449D793-EA01-4DC4-BA40-E1B34B054D9F"></sequenceFlow>
+    <sequenceFlow id="gw-to-logic-check" sourceRef="sid-B449D793-EA01-4DC4-BA40-E1B34B054D9F" targetRef="script-logic-check">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${var:getOrDefault(is_logic_check, false) }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-3AB45425-876E-4FC1-9F4F-B64DB4A139A9" sourceRef="script-logic-check" targetRef="sid-track-assignment"></sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_Collaboration">
     <bpmndi:BPMNPlane bpmnElement="Collaboration" id="BPMNPlane_Collaboration">
@@ -87,21 +128,48 @@
         <omgdc:Bounds height="81.0" width="114.0" x="477.0" y="135.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="workflowStage_event-assign" id="BPMNShape_workflowStage_event-assign">
-        <omgdc:Bounds height="76.0" width="109.0" x="690.0" y="138.00970362557496"></omgdc:Bounds>
+        <omgdc:Bounds height="76.0" width="109.0" x="720.0" y="138.00970362557496"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="system-cs-end-event" id="BPMNShape_system-cs-end-event">
-        <omgdc:Bounds height="28.0" width="28.0" x="915.0" y="162.00970362557496"></omgdc:Bounds>
+        <omgdc:Bounds height="28.0" width="28.0" x="975.0" y="162.00970362557496"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-B449D793-EA01-4DC4-BA40-E1B34B054D9F" id="BPMNShape_sid-B449D793-EA01-4DC4-BA40-E1B34B054D9F">
+        <omgdc:Bounds height="40.0" width="40.0" x="885.0" y="156.00970362557496"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-track-assignment" id="BPMNShape_sid-track-assignment">
+        <omgdc:Bounds height="30.0" width="30.0" x="645.0" y="161.00970362557496"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="script-logic-check" id="BPMNShape_script-logic-check">
+        <omgdc:Bounds height="80.0" width="100.0" x="724.5" y="255.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="manual-stage" id="BPMNShape_manual-stage">
         <omgdc:Bounds height="81.12467466972913" width="1093.9922135439697" x="75.0" y="422.87532533027064"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge bpmnElement="gw-to-complete-cs" id="BPMNEdge_gw-to-complete-cs" flowable:sourceDockerX="54.5" flowable:sourceDockerY="37.99999999999999" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
-        <omgdi:waypoint x="798.9499999999946" y="176.00970362557496"></omgdi:waypoint>
-        <omgdi:waypoint x="915.0" y="176.00970362557496"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="gw-to-complete-cs" id="BPMNEdge_gw-to-complete-cs" flowable:sourceDockerX="54.5" flowable:sourceDockerY="38.0" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
+        <omgdi:waypoint x="828.9499999999873" y="176.00970362557496"></omgdi:waypoint>
+        <omgdi:waypoint x="885.0" y="176.00970362557496"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="gw-to-assign" id="BPMNEdge_gw-to-assign" flowable:sourceDockerX="57.0" flowable:sourceDockerY="40.5" flowable:targetDockerX="54.5" flowable:targetDockerY="37.99999999999999">
-        <omgdi:waypoint x="590.9499999999923" y="175.63789843931826"></omgdi:waypoint>
-        <omgdi:waypoint x="689.9999999999981" y="175.8777376037515"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="sid-0C106586-DAAA-4AA2-B28E-F10CC1871419" id="BPMNEdge_sid-0C106586-DAAA-4AA2-B28E-F10CC1871419" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="54.5" flowable:targetDockerY="38.0">
+        <omgdi:waypoint x="674.9499986062676" y="176.00970362557496"></omgdi:waypoint>
+        <omgdi:waypoint x="720.0" y="176.00970362557496"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3AB45425-876E-4FC1-9F4F-B64DB4A139A9" id="BPMNEdge_sid-3AB45425-876E-4FC1-9F4F-B64DB4A139A9" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="15.0" flowable:targetDockerY="15.0">
+        <omgdi:waypoint x="724.5" y="295.0"></omgdi:waypoint>
+        <omgdi:waypoint x="660.0" y="295.0"></omgdi:waypoint>
+        <omgdi:waypoint x="660.0" y="190.95964100850256"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3BE47DD8-ECD1-4CAB-92B8-9FF1499EA27A" id="BPMNEdge_sid-3BE47DD8-ECD1-4CAB-92B8-9FF1499EA27A" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="924.9381391200869" y="176.00970362557496"></omgdi:waypoint>
+        <omgdi:waypoint x="975.0" y="176.00970362557496"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gw-to-assign" id="BPMNEdge_gw-to-assign" flowable:sourceDockerX="57.0" flowable:sourceDockerY="40.5" flowable:targetDockerX="15.0" flowable:targetDockerY="15.0">
+        <omgdi:waypoint x="590.9499999999983" y="175.73037794822613"></omgdi:waypoint>
+        <omgdi:waypoint x="645.0000092365395" y="175.94902510876423"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gw-to-logic-check" id="BPMNEdge_gw-to-logic-check" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="905.0" y="195.95132762828248"></omgdi:waypoint>
+        <omgdi:waypoint x="905.0" y="295.0"></omgdi:waypoint>
+        <omgdi:waypoint x="824.4499999998675" y="295.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="gw-to-init-data-cs" id="BPMNEdge_gw-to-init-data-cs" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="57.0" flowable:targetDockerY="40.5">
         <omgdi:waypoint x="389.94992761084217" y="175.9528304170791"></omgdi:waypoint>

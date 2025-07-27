@@ -12,6 +12,14 @@
     {
       "name": "eventKey",
       "type": "string"
+    },
+    {
+      "name": "is_logic_check",
+      "type": "boolean"
+    },
+    {
+      "name": "valueLogicCheck",
+      "type": "string"
     }
   ]
 }

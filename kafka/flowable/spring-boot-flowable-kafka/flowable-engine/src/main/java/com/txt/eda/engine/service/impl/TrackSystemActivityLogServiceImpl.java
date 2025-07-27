@@ -58,4 +58,20 @@ public class TrackSystemActivityLogServiceImpl implements TrackSystemActivityLog
         activityLogRepository.save(activityLog);
     }
 
+    @Override
+    public void trackAssignment(DelegateExecution execution) {
+        log.info("System action, trackAssignment track by event listener");
+        ActivityLog activityLog = ActivityLog.builder()
+                .processInstanceId(execution.getProcessInstanceId())
+                .workFlowStage("trackAssignment")
+                .user(SYSTEM_NAME)
+                .version(version)
+                .build();
+
+        String valueLogicCheck = (String) execution.getVariable("valueLogicCheck");
+        Boolean isLogicCheck = (Boolean) execution.getVariable("is_logic_check");
+        log.info("trackAssignment with isLogicCheck: {} - valueLogicCheck: {}", isLogicCheck, valueLogicCheck);
+        activityLogRepository.save(activityLog);
+    }
+
 }

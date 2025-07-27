@@ -28,9 +28,11 @@ public class FlowableEngineApplication {
         log.info("\n----------------------------------------------------------\n\t" +
                         "Application '{}' is running! Access URLs:\n\t" +
                         "Protocol: \t\t{}\n\t" +
+                        "Ports: \t\t{}\n\t" +
                         "Profile(s): \t{}\n----------------------------------------------------------",
                 env.getProperty("spring.application.name"),
                 protocol,
+                env.getProperty("server.port"),
                 env.getActiveProfiles());
     }
 

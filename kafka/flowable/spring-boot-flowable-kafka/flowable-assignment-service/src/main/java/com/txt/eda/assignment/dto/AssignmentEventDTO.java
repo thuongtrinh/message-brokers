@@ -21,4 +21,6 @@ public class AssignmentEventDTO implements Serializable {
     @JsonProperty("is_skip_fcheck")
     private boolean isSkipFCheck;
 
+    @JsonProperty("is_logic_check")
+    private Boolean isLogicCheck;
 }

@@ -9,4 +9,6 @@ public class Constants {
     public static final String REFERENCE = "reference";
     public static final String PAYLOAD = "payload";
 
+    public static final String TRANSACTION_LOGIC_CHECK = "LOGIC_CHECk";
+
 }
